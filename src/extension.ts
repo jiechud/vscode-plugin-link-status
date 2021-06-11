@@ -1,26 +1,24 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+
 import * as vscode from 'vscode';
+import * as sidebar from './test';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-plugin-link-status" is now active!');
+	 //注册侧边栏面板的实现
+	 const sidebar_test = new sidebar.EntryList();
+	 console.log('sidebar_test=>', sidebar_test)
+	 vscode.window.registerTreeDataProvider("sidebar_test_id1",sidebar_test);
+	 
+	 //注册命令 
+	 vscode.commands.registerCommand("nodeDependencies.refreshEntry",args => {
+		vscode.window.registerTreeDataProvider("sidebar_test_id1",sidebar_test);
+		vscode.window.showInformationMessage('刷新成功');
+	 });
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vscode-plugin-link-status.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from vscode-plugin-link-status!');
-	});
-
-	context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	console.log('您的扩展已经被释放 ！')
+}

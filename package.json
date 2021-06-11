@@ -1,8 +1,9 @@
 {
-  "name": "vscode-plugin-link-status",
-	"displayName": "vscode-plugin-link-status",
+	"name": "vscode-plugin-link-status",
+	"displayName": "Npm & Yarn Link Status",
 	"description": "",
 	"version": "0.0.1",
+	"publisher": "qiaojienode",
 	"engines": {
 		"vscode": "^1.57.0"
 	},
@@ -10,7 +11,7 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:vscode-plugin-link-status.helloWorld"
+		"onView:sidebar_test_id1"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -18,8 +19,42 @@
 			{
 				"command": "vscode-plugin-link-status.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "nodeDependencies.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+				  "light": "./src/resource/refresh.svg",
+				  "dark": "./src/resource/refresh.svg"
+				}
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "sidebar_test",
+					"title": "Link List",
+					"icon": "./src/resource/link.svg"
+				}
+			]
+		},
+		"views": {
+			"sidebar_test": [
+				{
+					"id": "sidebar_test_id1",
+					"name": "Link 列表"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "nodeDependencies.refreshEntry",
+					"when": "view == sidebar_test_id1",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
