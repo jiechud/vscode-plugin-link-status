@@ -2,7 +2,7 @@
 	"name": "vscode-plugin-link-list",
 	"displayName": "Npm & Yarn Link List",
 	"description": "",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "qiaojienode",
 	"engines": {
 		"vscode": "^1.49.0"
@@ -24,8 +24,8 @@
 				"command": "nodeDependencies.refreshEntry",
 				"title": "Refresh",
 				"icon": {
-				  "light": "resource/refresh.svg",
-				  "dark": "resource/refresh.svg"
+					"light": "resource/refresh.svg",
+					"dark": "resource/refresh.svg"
 				}
 			}
 		],
