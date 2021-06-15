@@ -20,5 +20,5 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	console.log('您的扩展已经被释放 ！')
+	console.log('您的扩展已经被释放 ！');
 }

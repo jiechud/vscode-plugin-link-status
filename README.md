@@ -1,3 +1,3 @@
-### 微软 token
+### Npm & Yarn Link List
+>>> npm和yarn link的列表， 支持普通项目和`lerna`项目
 
-ah7kvvisox3tuthpub2jamoazvxs4p7ptfkhoylsttc57owitz5q
