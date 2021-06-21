@@ -17,16 +17,19 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-plugin-link-status.helloWorld",
-				"title": "Hello World"
+				"command": "nodeDependencies.unlinkAllEntry",
+				"title": "All Unlink",
+				"icon": "resource/unlink.svg"
 			},
 			{
 				"command": "nodeDependencies.refreshEntry",
 				"title": "Refresh",
-				"icon": {
-					"light": "resource/refresh.svg",
-					"dark": "resource/refresh.svg"
-				}
+				"icon": "resource/refresh.svg"
+			},
+			{
+				"command": "nodeDependencies.unlinkEntry",
+				"title": "Unlink",
+				"icon": "resource/unlink.svg"
 			}
 		],
 		"viewsContainers": {
@@ -52,6 +55,18 @@
 					"command": "nodeDependencies.refreshEntry",
 					"when": "view == sidebar_test_id1",
 					"group": "navigation"
+				},
+				{
+					"command": "nodeDependencies.unlinkAllEntry",
+					"when": "view == sidebar_test_id1",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "nodeDependencies.unlinkEntry",
+					"when": "viewItem == folder",
+					"group": "inline"
 				}
 			]
 		}

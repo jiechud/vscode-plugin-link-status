@@ -14,15 +14,15 @@ export function getFolderByPath(path: string): Array<any> {
     const files = fs.readdirSync(path);
     let folderList: any = [];
     files.forEach(function (item, index) {
-        const currPath = nPath.join(path, item)
-        let stat = fs.lstatSync(currPath)
+        const currPath = nPath.join(path, item);
+        let stat = fs.lstatSync(currPath);
         if (stat.isDirectory() === true) { 
             folderList.push({
                 path: currPath,
                 name: item
-            })
+            });
         }
-    })
+    });
 
     return folderList;
 }

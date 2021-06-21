@@ -1,12 +1,18 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as nPath from 'path';
-import { getLinkedModules } from './linkedModules';
+import { getLinkedModules, unlinkModules } from './linkedModules';
 
 import { fsExistsSync, getFolderByPath } from './util/file';
+import { Command } from 'vscode';
 // 树节点
-export class EntryItem extends vscode.TreeItem
+class EntryItem extends vscode.TreeItem
 {
+}
+
+interface RootItem {
+    name: string;
+    path: string;
 }
 
 
@@ -27,14 +33,14 @@ async function getRootFolder(): Promise<any> {
     } else {
         return [{
             name: rootFolder.name,
-            path: nPath.join(rootFolder?.uri?.path, rootFolder.name)
-        }]
+            path: nPath.join(rootFolder?.uri?.path)
+        }];
     }
 }
 
-async function showLinkedModules(packagePath: string): Promise<any> {
+async function getCurrLinkedModules(packagePath: string): Promise<any> {
     // 获取根目录下的所有文件夹
-    const modules = await getLinkedModules(packagePath)
+    const modules = await getLinkedModules(packagePath);
     return modules;
 }
 
@@ -49,40 +55,43 @@ export class EntryList implements vscode.TreeDataProvider<EntryItem>
     getChildren(element?: EntryItem): vscode.ProviderResult<EntryItem[]> {
         if (element) {//子节点
             return new Promise(async (resolve, reject) => {
-                const modules = await showLinkedModules(element?.resourceUri?.path || '');
+                const modules = await getCurrLinkedModules(element?.resourceUri?.path || '');
                 const res = modules.map((item: {name: string, actualPath: string}) => {
                     return  new EntryItem(item.name, vscode.TreeItemCollapsibleState.None);
-                })
+                });
+                console.log('res=>', res);
                 resolve(res);
-                // var childs = [];
-                // for (let index = 0; index < 3; index++) {
-                //     let str = index.toString();
-                //     var item = new EntryItem(str,vscode.TreeItemCollapsibleState.None);
-                //     item.command = {command:"sidebar_test_id1.openChild", //命令id
-                //                     title:"标题",
-                //                     arguments:[str] //命令接收的参数
-                //                     };
-                //     childs[index] = item;
-                // }
                 
-            })
+            });
         } else { //根节点
 
             return new Promise( async (resolve, reject) => {
                 const res = await getRootFolder();
-              
                 const root = res.map((item: {name: string, path: string}) => {
-                    return new EntryItem(vscode.Uri.file(item.path), vscode.TreeItemCollapsibleState.Collapsed)
+                    const entryItem = new EntryItem(vscode.Uri.file(item.path), vscode.TreeItemCollapsibleState.Collapsed);
+                    // const command: Command = {
+                    //     title: 'UnLink',
+                    //     command: 'nodeDependencies.aUnlinkEntry',
+                    // };
+                    entryItem.contextValue = 'folder';
+                    return entryItem;
                 });
+                console.log('root=>', root);
                 resolve(root);
-                // resolve([new EntryItem("root",vscode.TreeItemCollapsibleState.Collapsed),
-                // new EntryItem("root1",vscode.TreeItemCollapsibleState.Collapsed)])
-            })
+            });
         }
     }
 }
 
+export const unlinkAllByPath = async (rootPath: string) => {
+    await unlinkModules(rootPath);
+};
 
-() => {
+export const unlinkAll = async () => {
+    const folder = await getRootFolder();
 
-}
+    const pAll = folder.map(async (item: RootItem) => {
+        await unlinkModules(item.path);
+    });
+    await Promise.all(pAll);
+};

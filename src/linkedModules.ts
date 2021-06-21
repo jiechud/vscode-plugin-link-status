@@ -2,10 +2,14 @@ import * as path from 'path';
 
 import * as fs from 'fs';
 import * as util from 'util';
+import * as child_process from 'child_process';
+
 
 const readdir = util.promisify(fs.readdir);
 const readlink = util.promisify(fs.readlink);
 const lstat = util.promisify(fs.lstat);
+const unlink = util.promisify(fs.unlink);
+const exec = util.promisify(child_process.exec);
 
 
 export interface ILinkedModule {
@@ -20,6 +24,21 @@ export async function hasLinkedModules(rootPath: string): Promise<boolean> {
 
 export async function getLinkedModules(rootPath: string): Promise<ILinkedModule[]> {
     return _getLinkedModules(path.join(rootPath, 'node_modules'));
+}
+
+export async function unlinkModules(rootPath: string) {
+    try {
+        const modules = await getLinkedModules(rootPath);
+        
+        const pAll = modules.map(async (item: ILinkedModule) => {
+            return await _yarnUnLink(item, rootPath);
+        });
+        await Promise.all(pAll);
+        return true;
+    } catch (error) {
+        return false;
+    }
+
 }
 
 async function _getLinkedModules(nodeModulesDir: string): Promise<ILinkedModule[]> {
@@ -56,6 +75,11 @@ async function _getLinkedModulesFromDir(nodeModulesDir: string, modules: string[
     return results.filter(result => !!result);
 }
 
+/**
+ * 递归获取link的最终位置
+ * @param folderPath 
+ * @returns 
+ */
 async function _getSymlinkTarget(folderPath: string): Promise<string> {
     const target = await readlink(folderPath);
     const absTarget = path.resolve(folderPath, '..', target);
@@ -71,6 +95,30 @@ async function isLinked(folderPath: string): Promise<boolean> {
         const stat: fs.Stats = await lstat(folderPath);
         return stat.isSymbolicLink();
     } catch (e) {
+        return false;
+    }
+}
+
+async function _unLink(folderPath: string): Promise<boolean> {
+    try {
+        console.log('unlink==>path', folderPath);
+        await unlink(folderPath);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function _yarnUnLink(linkModule:ILinkedModule, rootPath: string) {
+    try {
+        console.log('linkModule=>', linkModule, rootPath);
+        const res: any = await exec(`yarn unlink ${linkModule.name}`, {
+            cwd: rootPath,
+        });
+        console.log('res.stdout=>', res.stdout);
+        return res.stdout;
+        
+    } catch (error) {
         return false;
     }
 }
