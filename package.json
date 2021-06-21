@@ -2,7 +2,7 @@
 	"name": "vscode-plugin-link-list",
 	"displayName": "Npm & Yarn Link List",
 	"description": "",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "qiaojienode",
 	"engines": {
 		"vscode": "^1.49.0"
@@ -80,7 +80,8 @@
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "yarn run test-compile && yarn run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"pb": " vsce publish"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.49.0",
