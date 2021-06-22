@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as util from 'util';
 import * as child_process from 'child_process';
+import { getConfigDir } from './util/home-dir/userDir';
 
 
 const readdir = util.promisify(fs.readdir);
@@ -40,6 +41,19 @@ export async function unlinkModules(rootPath: string) {
     }
 
 }
+
+export async function getYarnLinkedModules() {
+    const configDir = getConfigDir();
+   return await _getLinkedModules(path.join(configDir, 'link'));
+}
+
+export async function linkedModule(linkModule: ILinkedModule, rootPath: string) {
+   return await _yarnLink(linkModule, rootPath);
+}
+
+export async function unLinkedModule(linkModule: ILinkedModule, rootPath: string) {
+    return await _yarnUnLink(linkModule, rootPath);
+ }
 
 async function _getLinkedModules(nodeModulesDir: string): Promise<ILinkedModule[]> {
     let modules: string[];
@@ -111,11 +125,22 @@ async function _unLink(folderPath: string): Promise<boolean> {
 
 async function _yarnUnLink(linkModule:ILinkedModule, rootPath: string) {
     try {
-        console.log('linkModule=>', linkModule, rootPath);
         const res: any = await exec(`yarn unlink ${linkModule.name}`, {
             cwd: rootPath,
         });
-        console.log('res.stdout=>', res.stdout);
+        return res.stdout;
+        
+    } catch (error) {
+        return false;
+    }
+}
+
+
+async function _yarnLink(linkModule:ILinkedModule, rootPath: string) {
+    try {
+        const res: any = await exec(`yarn link ${linkModule.name}`, {
+            cwd: rootPath,
+        });
         return res.stdout;
         
     } catch (error) {

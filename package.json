@@ -2,7 +2,7 @@
 	"name": "vscode-plugin-link-list",
 	"displayName": "Npm & Yarn Link List",
 	"description": "",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"publisher": "qiaojienode",
 	"engines": {
 		"vscode": "^1.49.0"
@@ -29,6 +29,16 @@
 			{
 				"command": "nodeDependencies.unlinkEntry",
 				"title": "Unlink",
+				"icon": "resource/unlink.svg"
+			},
+			{
+				"command": "nodeDependencies.linkEntry",
+				"title": "Link",
+				"icon": "resource/link1.svg"
+			},
+			{
+				"command": "nodeDependencies.unlinkSingleEntry",
+				"title": "UnLink",
 				"icon": "resource/unlink.svg"
 			}
 		],
@@ -66,6 +76,16 @@
 				{
 					"command": "nodeDependencies.unlinkEntry",
 					"when": "viewItem == folder",
+					"group": "inline"
+				},
+				{
+					"command": "nodeDependencies.linkEntry",
+					"when": "viewItem == link",
+					"group": "inline"
+				},
+				{
+					"command": "nodeDependencies.unlinkSingleEntry",
+					"when": "viewItem == link",
 					"group": "inline"
 				}
 			]

@@ -49,6 +49,35 @@ export function activate(context: vscode.ExtensionContext) {
 		unlinkAll(args?.resourceUri?.path);
 	});
 
+
+	/**
+	 * 取消所有link
+	 */
+	vscode.commands.registerCommand("nodeDependencies.unlinkSingleEntry", async (args) => {
+		try {
+			await sidebar.unLink(args?._data?.name, args?._data?.path);
+			await vscode.window.registerTreeDataProvider("sidebar_test_id1", sidebar_test);
+			vscode.window.showInformationMessage('Link成功!');
+		} catch (error) {
+			vscode.window.showInformationMessage('Link失败!');
+		}
+	});
+
+
+	/**
+	 * link
+	 */
+	vscode.commands.registerCommand("nodeDependencies.linkEntry", async (args) => {
+		try {
+			await sidebar.link(args?._data?.name, args?._data?.path);
+			await vscode.window.registerTreeDataProvider("sidebar_test_id1", sidebar_test);
+			vscode.window.showInformationMessage('Link成功!');
+		} catch (error) {
+			vscode.window.showInformationMessage('Link失败!');
+		}
+
+	});
+
 }
 
 // this method is called when your extension is deactivated

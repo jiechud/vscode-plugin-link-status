@@ -1,10 +1,9 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as nPath from 'path';
-import { getLinkedModules, unlinkModules } from './linkedModules';
+import { getLinkedModules, unlinkModules, getYarnLinkedModules, linkedModule, ILinkedModule, unLinkedModule } from './linkedModules';
 
 import { fsExistsSync, getFolderByPath } from './util/file';
-import { Command } from 'vscode';
+
 // 树节点
 class EntryItem extends vscode.TreeItem
 {
@@ -41,7 +40,16 @@ async function getRootFolder(): Promise<any> {
 async function getCurrLinkedModules(packagePath: string): Promise<any> {
     // 获取根目录下的所有文件夹
     const modules = await getLinkedModules(packagePath);
-    return modules;
+    const modulesYarnList = await getYarnLinkedModules();
+    
+    const modulesMap: any = {};
+    modules.forEach((item) => {
+        modulesMap[item.name] = item;
+    });
+    modulesYarnList.forEach((item: any) => {
+       item.isLink = modulesMap[item.name];
+    });
+    return modulesYarnList;
 }
 
 
@@ -56,10 +64,17 @@ export class EntryList implements vscode.TreeDataProvider<EntryItem>
         if (element) {//子节点
             return new Promise(async (resolve, reject) => {
                 const modules = await getCurrLinkedModules(element?.resourceUri?.path || '');
-                const res = modules.map((item: {name: string, actualPath: string}) => {
-                    return  new EntryItem(item.name, vscode.TreeItemCollapsibleState.None);
+                const res = modules.map((item: {name: string, actualPath: string, isLink: boolean}) => {
+
+                    const itemLabel: any = !item.isLink ? item.name : {
+                        label: item.name,
+                        highlights:[[0, item.name.length]]
+                    };
+                    const entryItem: any = new EntryItem(itemLabel, vscode.TreeItemCollapsibleState.None);
+                    entryItem.contextValue = 'link';
+                    entryItem._data= {path: element?.resourceUri?.path, name: item.name}; // 存放些扩展数据
+                    return entryItem;
                 });
-                console.log('res=>', res);
                 resolve(res);
                 
             });
@@ -94,4 +109,21 @@ export const unlinkAll = async () => {
         await unlinkModules(item.path);
     });
     await Promise.all(pAll);
+};
+
+
+export const unLink = async (packageName: string, rootPath: string) => {
+    const linkedModuleD: ILinkedModule= {
+        name: packageName,
+        actualPath: '',
+    };
+   await unLinkedModule(linkedModuleD, rootPath);
+};
+
+export const link = async (packageName: string, rootPath: string) => {
+    const linkedModuleD: ILinkedModule= {
+        name: packageName,
+        actualPath: '',
+    };
+   await linkedModule(linkedModuleD, rootPath);
 };
