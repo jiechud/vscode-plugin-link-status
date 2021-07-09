@@ -17,22 +17,23 @@ interface RootItem {
 
 async function getRootFolder(): Promise<any> {
     const workspaceFolders: any = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders || !workspaceFolders.length) return;
+    if (!workspaceFolders || !workspaceFolders.length) {return;}
 
-    if (workspaceFolders.length > 1) {
-        return;
-    }
-
+    if (workspaceFolders.length > 1) {return;}
     const rootFolder = workspaceFolders?.[0];
-    const lernaPath = `${rootFolder?.uri?.path}/packages`;
+    const lernaPath = `${rootFolder?.uri?.fsPath}/packages`;
+    // const lernaPath = `${rootFolder?.uri?.path}/packages`;
     console.log('lernaPath=>',rootFolder, lernaPath, fsExistsSync(lernaPath));
     // 判断是否是lerna项目
     if (fsExistsSync(lernaPath)){
+        console.log('Is lerna');
         return getFolderByPath(lernaPath);
     } else {
+        console.log('not lerna');
         return [{
             name: rootFolder.name,
-            path: nPath.join(rootFolder?.uri?.path)
+            path: nPath.join(rootFolder?.uri?.fsPath)
+            // path: nPath.join(rootFolder?.uri?.path)
         }];
     }
 }
@@ -47,8 +48,10 @@ async function getCurrLinkedModules(packagePath: string): Promise<any> {
         modulesMap[item.name] = item;
     });
     modulesYarnList.forEach((item: any) => {
-       item.isLink = modulesMap[item.name];
+    //    item.isLink = modulesMap[item.name];
+       item.isLink = (modulesMap[item.name]? true:false );
     });
+    // console.log('number of registered link' + modulesYarnList.length);
     return modulesYarnList;
 }
 
@@ -63,16 +66,19 @@ export class EntryList implements vscode.TreeDataProvider<EntryItem>
     getChildren(element?: EntryItem): vscode.ProviderResult<EntryItem[]> {
         if (element) {//子节点
             return new Promise(async (resolve, reject) => {
-                const modules = await getCurrLinkedModules(element?.resourceUri?.path || '');
+                // console.log('path 2 get Linked Modules ===>',element?.resourceUri?.fsPath || '');
+                const modules = await getCurrLinkedModules(element?.resourceUri?.fsPath || '');
+                // const modules = await getCurrLinkedModules(element?.resourceUri?.path || '');
                 const res = modules.map((item: {name: string, actualPath: string, isLink: boolean}) => {
-
+                    // console.log(item.name+' isLink is '+ item.isLink);
                     const itemLabel: any = !item.isLink ? item.name : {
                         label: item.name,
                         highlights:[[0, item.name.length]]
                     };
                     const entryItem: any = new EntryItem(itemLabel, vscode.TreeItemCollapsibleState.None);
                     entryItem.contextValue = 'link';
-                    entryItem._data= {path: element?.resourceUri?.path, name: item.name}; // 存放些扩展数据
+                    entryItem._data= {path: element?.resourceUri?.fsPath, name: item.name}; // 存放些扩展数据
+                    // entryItem._data= {path: element?.resourceUri?.path, name: item.name}; // 存放些扩展数据
                     return entryItem;
                 });
                 resolve(res);
@@ -104,7 +110,7 @@ export const unlinkAllByPath = async (rootPath: string) => {
 
 export const unlinkAll = async () => {
     const folder = await getRootFolder();
-
+    console.log('rootfolder when unlinkAll ==>', folder);
     const pAll = folder.map(async (item: RootItem) => {
         await unlinkModules(item.path);
     });
@@ -121,6 +127,7 @@ export const unLink = async (packageName: string, rootPath: string) => {
 };
 
 export const link = async (packageName: string, rootPath: string) => {
+    // console.log('name ==>', packageName,'path ==>', rootPath);
     const linkedModuleD: ILinkedModule= {
         name: packageName,
         actualPath: '',

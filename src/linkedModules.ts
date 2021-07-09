@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as util from 'util';
 import * as child_process from 'child_process';
-import { getConfigDir } from './util/home-dir/userDir';
+import { getConfigDir, getDataDir} from './util/home-dir/userDir';
 
 
 const readdir = util.promisify(fs.readdir);
@@ -43,8 +43,9 @@ export async function unlinkModules(rootPath: string) {
 }
 
 export async function getYarnLinkedModules() {
-    const configDir = getConfigDir();
-   return await _getLinkedModules(path.join(configDir, 'link'));
+    // const configDir = getConfigDir();
+    const dataDir = getDataDir();
+   return await _getLinkedModules(path.join(dataDir, 'link'));
 }
 
 export async function linkedModule(linkModule: ILinkedModule, rootPath: string) {
@@ -64,6 +65,7 @@ async function _getLinkedModules(nodeModulesDir: string): Promise<ILinkedModule[
     }
 
     const linkedModules = await _getLinkedModulesFromDir(nodeModulesDir, modules);
+    // console.log('the path 2 find linked modules is: '+nodeModulesDir);
     for (let m of modules) {
         if (m.startsWith('@')) {
             linkedModules.push(... await _getLinkedModules(path.join(nodeModulesDir, m)));
@@ -138,6 +140,7 @@ async function _yarnUnLink(linkModule:ILinkedModule, rootPath: string) {
 
 async function _yarnLink(linkModule:ILinkedModule, rootPath: string) {
     try {
+        // console.log('name ==>', linkModule.name,'path ==>', rootPath);
         const res: any = await exec(`yarn link ${linkModule.name}`, {
             cwd: rootPath,
         });

@@ -27,9 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
 				await sidebar.unlinkAll();
 			}
 			await vscode.window.registerTreeDataProvider("sidebar_test_id1", sidebar_test);
-			vscode.window.showInformationMessage('Link取消成功');
+			vscode.window.showInformationMessage('所有Link取消成功');
 		} catch (error) {
-			vscode.window.showInformationMessage('Link取消失败');
+			vscode.window.showInformationMessage('所有Link取消失败');
 		}
 
 	}
@@ -43,23 +43,24 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	/**
-	 * 取消所有link
+	 * 取消当个包link
 	 */
 	vscode.commands.registerCommand("nodeDependencies.unlinkEntry", async (args) => {
-		unlinkAll(args?.resourceUri?.path);
+		unlinkAll(args?.resourceUri?.fsPath);
+		// unlinkAll(args?.resourceUri?.path);
 	});
 
 
 	/**
-	 * 取消所有link
+	 * 取消单个link
 	 */
 	vscode.commands.registerCommand("nodeDependencies.unlinkSingleEntry", async (args) => {
 		try {
 			await sidebar.unLink(args?._data?.name, args?._data?.path);
 			await vscode.window.registerTreeDataProvider("sidebar_test_id1", sidebar_test);
-			vscode.window.showInformationMessage('Link成功!');
+			vscode.window.showInformationMessage('Link取消成功!');
 		} catch (error) {
-			vscode.window.showInformationMessage('Link失败!');
+			vscode.window.showInformationMessage('Link取消失败!');
 		}
 	});
 
