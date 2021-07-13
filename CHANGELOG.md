@@ -1,9 +1,18 @@
 # Change Log
 
-All notable changes to the "vscode-plugin-link-status" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+* **0.0.5**
+    1. 修复windows路径bug
 
-## [Unreleased]
+* **0.0.4**
 
-- Initial release
+    1.完善文档
+    2.支持列出已link的包，手动添加link
+
+
+
+* **0.0.3**
+
+    1.修复单独项目link
+
+    2.添加unlink功能
