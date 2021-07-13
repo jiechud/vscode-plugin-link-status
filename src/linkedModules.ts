@@ -42,6 +42,20 @@ export async function unlinkModules(rootPath: string) {
 
 }
 
+export async function linkModules(rootPath: string) {
+    try {
+        const modulesYarnList = await getYarnLinkedModules();
+        const pAll = modulesYarnList.map(async (item: ILinkedModule) => {
+            return await _yarnLink(item, rootPath);
+        });
+        await Promise.all(pAll);
+        return true;
+    } catch (error) {
+        return false;
+    }
+
+}
+
 export async function getYarnLinkedModules() {
     // const configDir = getConfigDir();
     const dataDir = getDataDir();
