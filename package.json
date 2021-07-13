@@ -2,7 +2,7 @@
 	"name": "vscode-plugin-link-list",
 	"displayName": "Npm & Yarn Link List",
 	"description": "",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"publisher": "qiaojienode",
 	"engines": {
 		"vscode": "^1.49.0"
@@ -17,6 +17,11 @@
 	"contributes": {
 		"commands": [
 			{
+				"command": "nodeDependencies.linkAllEntry",
+				"title": "All Link",
+				"icon": "resource/link1.svg"
+			},
+			{
 				"command": "nodeDependencies.unlinkAllEntry",
 				"title": "All Unlink",
 				"icon": "resource/unlink.svg"
@@ -27,12 +32,17 @@
 				"icon": "resource/refresh.svg"
 			},
 			{
+				"command": "nodeDependencies.linkEntry",
+				"title": "Entry Link",
+				"icon": "resource/link1.svg"
+			},
+			{
 				"command": "nodeDependencies.unlinkEntry",
-				"title": "Unlink",
+				"title": "Entry Unlink",
 				"icon": "resource/unlink.svg"
 			},
 			{
-				"command": "nodeDependencies.linkEntry",
+				"command": "nodeDependencies.linkSingleEntry",
 				"title": "Link",
 				"icon": "resource/link1.svg"
 			},
@@ -70,6 +80,11 @@
 					"command": "nodeDependencies.unlinkAllEntry",
 					"when": "view == sidebar_test_id1",
 					"group": "navigation"
+				},
+				{
+					"command": "nodeDependencies.linkAllEntry",
+					"when": "view == sidebar_test_id1",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -80,11 +95,16 @@
 				},
 				{
 					"command": "nodeDependencies.linkEntry",
-					"when": "viewItem == link",
+					"when": "viewItem == folder",
 					"group": "inline"
 				},
 				{
 					"command": "nodeDependencies.unlinkSingleEntry",
+					"when": "viewItem == link",
+					"group": "inline"
+				},
+				{
+					"command": "nodeDependencies.linkSingleEntry",
 					"when": "viewItem == link",
 					"group": "inline"
 				}

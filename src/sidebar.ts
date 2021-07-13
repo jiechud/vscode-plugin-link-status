@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as nPath from 'path';
-import { getLinkedModules, unlinkModules, getYarnLinkedModules, linkedModule, ILinkedModule, unLinkedModule } from './linkedModules';
+import { getLinkedModules, unlinkModules, linkModules, getYarnLinkedModules, linkedModule, ILinkedModule, unLinkedModule } from './linkedModules';
 
 import { fsExistsSync, getFolderByPath } from './util/file';
 
@@ -108,15 +108,27 @@ export const unlinkAllByPath = async (rootPath: string) => {
     await unlinkModules(rootPath);
 };
 
+export const linkAllByPath = async (rootPath: string) => {
+    await linkModules(rootPath);
+};
+
 export const unlinkAll = async () => {
     const folder = await getRootFolder();
-    console.log('rootfolder when unlinkAll ==>', folder);
+    // console.log('rootfolder when unlinkAll ==>', folder);
     const pAll = folder.map(async (item: RootItem) => {
         await unlinkModules(item.path);
     });
     await Promise.all(pAll);
 };
 
+export const linkAll = async () => {
+    const folder = await getRootFolder();
+    // console.log('rootfolder when unlinkAll ==>', folder);
+    const pAll = folder.map(async (item: RootItem) => {
+        await linkModules(item.path);
+    });
+    await Promise.all(pAll);
+};
 
 export const unLink = async (packageName: string, rootPath: string) => {
     const linkedModuleD: ILinkedModule= {
