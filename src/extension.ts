@@ -33,7 +33,21 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 	}
+	
+	async function linkAll(rootPath?: string) {
+		try {
+			if (rootPath) {
+				await sidebar.linkAllByPath(rootPath);
+			} else {
+				await sidebar.linkAll();
+			}
+			await vscode.window.registerTreeDataProvider("sidebar_test_id1", sidebar_test);
+			vscode.window.showInformationMessage('所有Link成功');
+		} catch (error) {
+			vscode.window.showInformationMessage('所有Link失败');
+		}
 
+	}
 
 	/**
 	 * 取消所有link
@@ -43,13 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	/**
-	 * 取消当个包link
+	 * 取消单个包link
 	 */
 	vscode.commands.registerCommand("nodeDependencies.unlinkEntry", async (args) => {
 		unlinkAll(args?.resourceUri?.fsPath);
 		// unlinkAll(args?.resourceUri?.path);
 	});
-
 
 	/**
 	 * 取消单个link
@@ -66,9 +79,24 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	/**
-	 * link
+	 * link所有
+	 */
+	vscode.commands.registerCommand("nodeDependencies.linkAllEntry", async (args) => {
+		linkAll();
+	});
+
+	/**
+	 * link单个包
 	 */
 	vscode.commands.registerCommand("nodeDependencies.linkEntry", async (args) => {
+		linkAll(args?.resourceUri?.fsPath);
+	});
+
+
+	/**
+	 * link单个
+	 */
+	vscode.commands.registerCommand("nodeDependencies.linkSingleEntry", async (args) => {
 		try {
 			await sidebar.link(args?._data?.name, args?._data?.path);
 			await vscode.window.registerTreeDataProvider("sidebar_test_id1", sidebar_test);
